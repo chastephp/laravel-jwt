@@ -24,7 +24,7 @@ trait JwtTrait
      *
      * @return array
      */
-    public function getJwtCustomClaims()
+    public function getJwtCustomClaims(): array
     {
         return [];
     }
@@ -33,7 +33,7 @@ trait JwtTrait
      * @param $payload
      * @return bool
      */
-    public function customJwtCheck($payload)
+    public function customJwtCheck($payload): bool
     {
         return true;
     }
