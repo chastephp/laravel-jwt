@@ -13,3 +13,8 @@ a laravel jwt.
 $ composer require chastephp/laravel-jwt
 ```
 
+## Publish
+```sh
+php artisan vendor:publish --provider="ChastePhp\LaravelJwt\JwtServiceProvider"
+```
+
