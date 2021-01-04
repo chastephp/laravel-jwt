@@ -7,7 +7,7 @@
 
 namespace ChastePhp\LaravelJwt\Auth;
 
-class JwtTrait
+trait JwtTrait
 {
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
