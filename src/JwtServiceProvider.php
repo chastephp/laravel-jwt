@@ -2,7 +2,7 @@
 
 namespace ChastePhp\LaravelJwt;
 
-use ChastePhp\LaravelExtras\Auth\JwtGuard;
+use ChastePhp\LaravelJwt\Auth\JwtGuard;
 use ChastePhp\LaravelJwt\Console\KeyGenerateCommand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
