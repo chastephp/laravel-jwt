@@ -7,9 +7,9 @@
 
 namespace ChastePhp\LaravelJwt\Auth;
 
-class JwtException extends \Exception
+use Illuminate\Auth\AuthenticationException;
+
+class JwtException extends AuthenticationException
 {
-
     protected $message = 'An error occurred';
-
 }
