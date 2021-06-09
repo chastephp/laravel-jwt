@@ -113,6 +113,8 @@ class JwtGuard implements Guard
         $secret = config('jwt.secret');
         $time = time();
         $host = $this->request->getHost();
+        $user = $this->user();
+        $customClaims = method_exists($user, 'getJWTCustomClaims') ? $user->getJWTCustomClaims() : [];
 
         $payload = array_merge([
             'iss' => $host,
@@ -120,10 +122,10 @@ class JwtGuard implements Guard
             'iat' => $time,
             'nbf' => $time,
             'exp' => $time + config('jwt.ttl') * 60
-        ], $this->user()->getJWTCustomClaims());
+        ], $customClaims);
 
         // Set up id
-        $payload['jti'] = $this->user()->getJWTIdentifier();
+        $payload['jti'] = $user->getJWTIdentifier();
 
         return JWT::encode($payload, $secret, config('jwt.algo'));
     }
