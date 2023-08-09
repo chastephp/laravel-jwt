@@ -17,6 +17,10 @@ class JwtGuard implements Guard
 {
     use GuardHelpers;
 
+    private $secret;
+    private $ttl; // seconds
+    private $algo;
+
     /**
      * The request instance.
      *
@@ -30,6 +34,12 @@ class JwtGuard implements Guard
     ) {
         $this->request = $request;
         $this->provider = $provider;
+        $this->secret = config('jwt.secret');
+        if (empty($this->secret)) {
+            throw new JwtException('jwt secret was invalid');
+        }
+        $this->algo = config('jwt.algo');
+        $this->ttl = config('jwt.ttl');
     }
 
     public function user()
@@ -44,7 +54,7 @@ class JwtGuard implements Guard
 
         if (!empty($token)) {
             try {
-                $payload = JWT::decode($token, config('jwt.secret'), [config('jwt.algo')]);
+                $payload = JWT::decode($token, $this->secret, [$this->algo]);
             } catch (\Exception $e) {
                 throw new JwtException($e->getMessage());
             }
@@ -54,6 +64,10 @@ class JwtGuard implements Guard
             }
 
             $user = $this->provider->retrieveById($payload->jti);
+
+            if ($payload->sub !== $user::class) {
+                throw new JwtException('token was invalid');
+            }
 
             if ($user && method_exists($user, 'customJwtCheck')) {
                 if (!$user->customJwtCheck($payload)) {
@@ -110,7 +124,6 @@ class JwtGuard implements Guard
 
     public function encode()
     {
-        $secret = config('jwt.secret');
         $time = time();
         $host = $this->request->getHost();
         $user = $this->user();
@@ -118,16 +131,14 @@ class JwtGuard implements Guard
 
         $payload = array_merge([
             'iss' => $host,
-            'aud' => $host,
-            'iat' => $time,
-            'nbf' => $time,
-            'exp' => $time + config('jwt.ttl') * 60
+            'sub' => $user::class,
+            'exp' => $time + $this->ttl
         ], $customClaims);
 
         // Set up id
         $payload['jti'] = $user->getJWTIdentifier();
 
-        return JWT::encode($payload, $secret, config('jwt.algo'));
+        return JWT::encode($payload, $this->secret, $this->algo);
     }
 
     /**
