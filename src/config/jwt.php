@@ -6,9 +6,9 @@ return [
     'secret' => env('JWT_SECRET'),
 
     /**
-     * minutes
+     * seconds
      */
-    'ttl' => env('JWT_TTL', 60 * 24),
+    'ttl' => env('JWT_TTL', 86400 * 30),
 
 
     'algo' => env('JWT_ALGO', 'HS256'),
